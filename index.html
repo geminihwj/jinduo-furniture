@@ -226,14 +226,47 @@
             color: var(--ink);
             padding: .5rem;
         }
+        .nav__links.mobile-open {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(250,248,243,.97);
+            backdrop-filter: blur(12px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+        }
+        .nav__links.mobile-open a {
+            font-size: 1.3rem !important;
+            padding: 1rem 2rem;
+            color: var(--ink);
+            border-bottom: 1px solid var(--border);
+            width: 100%;
+            text-align: center;
+        }
+        .nav__links.mobile-open a::after { display: none !important; }
+        .nav__links.mobile-open li:last-child a { border-bottom: none; }
+        .nav__links.mobile-open .nav__cta {
+            display: block;
+            width: calc(100% - 4rem);
+            text-align: center;
+            margin: 1rem 2rem 0;
+            padding: .9rem !important;
+            background: var(--green);
+            color: #fff !important;
+            border-radius: 6px;
+            font-size: 1.1rem !important;
+        }
 
         /* ===== HERO ===== */
         .hero {
-            min-height: 100vh;
+            min-height: 100svh;
             position: relative;
             display: flex;
             align-items: flex-end;
-            padding-bottom: 6rem;
+            padding-bottom: 5rem;
             overflow: hidden;
             background: var(--ink);
         }
@@ -724,6 +757,10 @@
         .reveal-delay-3 { transition-delay: .3s; }
 
         /* ===== RESPONSIVE ===== */
+        /* ===== MOBILE MENU ICON ===== */
+        .nav__mobile-btn::before { content: '☰'; }
+        .nav__links.mobile-open ~ .nav__mobile-btn::before { content: '✕'; }
+
         @media (max-width: 1100px) {
             .products__grid { grid-template-columns: repeat(3, 1fr); }
             .gallery__grid { grid-template-columns: repeat(4, 1fr); }
@@ -732,7 +769,7 @@
         @media (max-width: 900px) {
             .section { padding: 5rem 0; }
             .nav__links { display: none; }
-            .nav__mobile-btn { display: block; }
+            .nav__mobile-btn { display: flex; align-items: center; justify-content: center; }
             .hero__stats { gap: 2rem; }
             .intro__grid { grid-template-columns: 1fr; gap: 3rem; }
             .intro__visual { order: -1; }
@@ -745,19 +782,37 @@
             .footer__top { grid-template-columns: 1fr 1fr; gap: 2rem; }
         }
         @media (max-width: 600px) {
-            .container { padding: 0 1.5rem; }
-            .hero__stats { flex-direction: column; gap: 1.5rem; }
-            .products__grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
-            .gallery__grid { grid-template-columns: repeat(2, 1fr); }
+            .container { padding: 0 1.2rem; }
+            .section { padding: 3.5rem 0; }
+            .hero { min-height: 92svh; padding-bottom: 3.5rem; }
+            .hero__title { font-size: clamp(2rem, 8vw, 3rem) !important; }
+            .hero__subtitle { font-size: .9rem !important; padding: 0 .5rem; }
+            .hero__stats { flex-direction: column; gap: 1rem; }
+            .hero__btns { flex-direction: column; gap: .8rem; }
+            .hero__btn { display: block; text-align: center; }
+            .products__grid { grid-template-columns: 1fr 1fr; gap: .8rem; }
+            .gallery__grid { grid-template-columns: repeat(2, 1fr); gap: .5rem; }
             .stds-grid { grid-template-columns: 1fr; }
             .cases__grid { grid-template-columns: 1fr; }
             .company__milestones { grid-template-columns: 1fr; }
             .footer__top { grid-template-columns: 1fr; }
             .footer__bottom { flex-direction: column; gap: .5rem; text-align: center; }
+            .intro__badge { font-size: .65rem; }
+            .prod-card__body { padding: 1rem; }
+            .prod-card__title { font-size: .9rem; }
+            .prod-card__spec { font-size: .75rem; }
+            .stds-card { padding: 1.2rem; }
+            .stds-card__title { font-size: 1rem; }
+            .stds-card__num { font-size: 2.5rem; }
+            .cases__item { padding: 1.2rem; }
+            .cases__item-title { font-size: 1rem; }
+            .contact-form-wrap { padding: 1.5rem; }
+            .form-group input, .form-group textarea { font-size: 15px; }
         }
         @media (max-width: 480px) {
-            .hero__title { font-size: 2.2rem; }
+            .hero__title { font-size: 2rem !important; }
             .products__grid { grid-template-columns: 1fr; }
+            .section { padding: 3rem 0; }
         }
     </style>
 </head>
@@ -782,7 +837,7 @@
             <li><a href="#cases">工程案例</a></li>
             <li><a href="#contact" class="nav__cta">联系我们 →</a></li>
         </ul>
-        <button class="nav__mobile-btn" onclick="document.querySelector('.nav__links').classList.toggle('mobile-open')">☰</button>
+        <button class="nav__mobile-btn" onclick="var m=document.querySelector('.nav__links');m.classList.toggle('mobile-open');this.textContent=m.classList.contains('mobile-open')?'✕':'☰'">☰</button>
     </div>
 </nav>
 
@@ -1227,6 +1282,13 @@
         nav.classList.toggle('is-scrolled', window.scrollY > 60);
     });
 
+    // Mobile menu close on link click
+    document.querySelectorAll('.nav__links a').forEach(a => {
+        a.addEventListener('click', () => {
+            document.querySelector('.nav__links').classList.remove('mobile-open');
+        });
+    });
+
     // Scroll reveal
     const revealEls = document.querySelectorAll('.reveal');
     const revealObs = new IntersectionObserver((entries) => {
@@ -1259,6 +1321,17 @@
             const target = document.querySelector(this.getAttribute('href'));
             if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const menu = document.querySelector('.nav__links');
+        const btn = document.querySelector('.nav__mobile-btn');
+        if (menu && menu.classList.contains('mobile-open') &&
+            !menu.contains(e.target) && !btn.contains(e.target)) {
+            menu.classList.remove('mobile-open');
+            btn.textContent = '☰';
+        }
     });
 </script>
 </body>
